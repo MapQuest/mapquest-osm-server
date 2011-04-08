@@ -12,7 +12,7 @@ a (read-only) subset of the [OSM v0.6 API][osmapi].
 
 Being moved to GitHub; stay tuned!
 
-## References
+<!-- References -->
 
  [membase]: http://www.membase.org/ "Membase"
  [osmapi]: http://wiki.openstreetmap.org/wiki/API_v0.6 "OSM v0.6 API"
