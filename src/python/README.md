@@ -23,7 +23,30 @@ scalable API server for OSM map data.
 
 * `tests/`
 
-    Test code. 
+    Test code.
+
+## Running the code 'in-place'
+
+* Configuration information for these tools is specified in the file
+  `config/osm-api-server.cfg`.
+* The script `front-end` starts the server.  With the default
+  configuration, this server would need to be run as root since it
+  listens for API requests on port 80.  The listening port may be
+  changed using the configuration file (see section `front-end`,
+  configuration item `port`).
+
+    % sudo ./front-end
+
+* The script `db-mgr` invokes the ingestion tool.  For example:
+    * To initialize the data store, use:
+
+        % ./db-mgr -I
+
+    * To load a "planet.osm" planet dump into the data store, use:
+
+        % ./db-mgr PLANET.OSM
+
+Both scripts support a `--help` option.
 
 <!-- References. -->
 
