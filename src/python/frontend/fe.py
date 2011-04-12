@@ -46,16 +46,16 @@ class RootHandler(tornado.web.RequestHandler):
     default_message = """\
 <html>
   <head>
-    <title>Yet another (read-only) OSM API Server</title>
+    <title>A scalable, read-only, OSM API Server</title>
   </head>
   <body>
    <h1>Welcome</h1>
 
-   <p>You have reached a (read-only) implementation of an API server
+   <p>You have reached an experimental implementation of an API server
       serving map data from the <a
       href="http://www.openstreetmap.org/">OpenStreetMap</a> project.</p>
 
-   <h2>API Version supported</h2>
+   <h2>API Version / Operations Supported</h2>
    <p>This server supports read queries conforming to the <ab
      href="http://wiki.openstreetmap.org/wiki/API_v%(apiversion)s">v%(apiversion)s</a>
      OSM API.</p>
@@ -66,8 +66,8 @@ class RootHandler(tornado.web.RequestHandler):
    <ul>
      <li><p>Source code may be found at:
        <a href="%(sourcerepository)s">%(sourcerepository)s</a>.</p></li>
-     <li><p>Please see the <a href="%(projectwiki)s">project wiki</a> for other information
-     about the project.</p></li>
+     <li><p>The project wiki may be found at:
+       <a href="%(projectwiki)s">%(projectwiki)s</a>.</p></li>
    </ul>
   </body>
 </html>"""
