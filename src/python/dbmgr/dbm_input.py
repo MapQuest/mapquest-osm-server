@@ -31,6 +31,7 @@ import gzip
 import os
 
 from lxml.etree import iterparse
+from pipes import quote
 
 from apiserver.osmelement import encode_coordinate, new_osm_element
 import apiserver.const as C
@@ -104,7 +105,7 @@ def makesource(config, options, fn):
 
     if ext in [".bz2", ".gz"]:
         if ext == ".bz2":
-            f = os.popen("bzcat %s" % fn, 'r')
+            f = os.popen("bzcat %s" % quote(fn), 'r')
         elif ext == ".gz":
             f = gzip.GzipFile(fn, mode='r')
         (basefn, _) = os.path.splitext(fn)
