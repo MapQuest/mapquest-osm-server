@@ -94,8 +94,8 @@ def main():
     # Check invocation syntax.
     if options.doinit:
         if len(args):
-            parser.error("Usage error: cannot specify option --init and"
-                         "files.")
+            parser.error("both option -I/--init and [files] were specified "
+                         "together.")
 
     # Read configuration information.
     configfiles = [options.config, os.path.join(sys.path[0], devconfigdir,
