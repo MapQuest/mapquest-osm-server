@@ -10,9 +10,13 @@ a (read-only) subset of the [OSM v0.6 API][osmapi].
 
 ## Current Status
 
-Being moved to GitHub; stay tuned!
+This repository contains a working snapshot of the server.
+
+The list of APIs supported is documented at the wiki page
+[SupportedRequests][].
 
 <!-- References -->
 
  [membase]: http://www.membase.org/ "Membase"
  [osmapi]: http://wiki.openstreetmap.org/wiki/API_v0.6 "OSM v0.6 API"
+ [SupportedRequests]: https://github.com/MapQuest/mapquest-osm-server/wiki/SupportedRequests
