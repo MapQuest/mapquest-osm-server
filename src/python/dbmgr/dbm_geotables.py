@@ -54,19 +54,20 @@ class GeoGroupTable:
     '''Group OSM nodes by their geographical coordinates.
 
     The coordinates of the globe are partitioned into disjoint areas.
-    Each partition is named by the geohash code of its (n,w) corner.'''
+    Each partition is named by the geohash code of its (n,w) corner.
+
+    Grouping of nodes is implemented by restricting the length of
+    the geohash codes used.
+    '''
 
     def __init__(self, config, options, db):
         '''Initialize the table.
 
         Keyword arguments:
+        config        - A ConfigParser instance.
         options       - An optparse.OptionParser structure.
         db            - A DB object supporting 'get()' and 'store()'
                         methods.
-        ghkeylength   - Specifies the coverage parameter for each partition.
-                        A smaller key length causes each partition to cover
-                        a larger geographical area.
-        scalefactor   - Scale factor used when handling lat/lon coordinates.
         '''
         self.geodb = collections.defaultdict(set)
         self.db = db
