@@ -50,6 +50,36 @@ from apiserver.osmelement import new_osm_element
 from datastore.lrucache import BoundedLRUBuffer
 from datastore.ds_geohash import geohash_key_for_element
 
+class NodeGroup:
+    '''A set of OSM nodes, and their coordinates.
+    '''
+    def __init__(self):
+        '''Initialize a node group.'''
+        self.nodecoords = {}
+
+    def __contains__(self, nodeid):
+        return nodeid in self.nodecoords
+
+    def add(self, osmnode):
+        '''Add a node to the group.'''
+        nodeid = osmnode.id
+        assert nodeid not in self.nodecoords, \
+            "Duplicate insertion of %s" % nodeid
+        self.nodecoords[nodeid] = (osmnode[C.LAT], osmnode[C.LON])
+
+    def update(self, nodelist):
+        '''Update a nodegroup from a nodelist.'''
+        for (nid, lat, lon) in nodelist:
+            if nid not in self.nodecoords:
+                self.nodecoords[nid] = (lat, lon)
+            else:
+                assert (lat, lon) == self.nodecoords[nid]
+
+    def aslist(self):
+        '''Return the list representation of a nodegroup.'''
+        return [(nodeid, lat, lon) for (nodeid, (lat, lon)) in
+                self.nodecoords.items()]
+
 class GeoGroupTable:
     '''Group OSM nodes by their geographical coordinates.
 
@@ -69,7 +99,7 @@ class GeoGroupTable:
         db            - A DB object supporting 'get()' and 'store()'
                         methods.
         '''
-        self.geodb = collections.defaultdict(set)
+        self.geodb = collections.defaultdict(NodeGroup)
         self.db = db
 
         lrusize = config.getint(C.DATASTORE, C.GEODOC_LRU_SIZE)
@@ -133,12 +163,15 @@ class GeoGroupTable:
 
             self.wrqueue.task_done()
 
-    def _write_geodoc(self, key, nodeset):
-        "Merge in a set of nodes into a geodoc."
+    def _write_geodoc(self, key, nodegroup):
+        "Merge in a group of nodes into a geodoc."
+        assert isinstance(nodegroup, NodeGroup)
+
         geodoc = self.db.retrieve_element(C.GEODOC, key)
         if geodoc is None:      # New document.
             geodoc = new_osm_element(C.GEODOC, key)
-        geodoc[C.NODES].update(nodeset)
+        nodegroup.update(geodoc[C.NODES])
+        geodoc[C.NODES] = nodegroup.aslist()
         self.db.store_element(C.GEODOC, key, geodoc)
 
     def add(self, elem):
@@ -162,7 +195,7 @@ class GeoGroupTable:
 
         elemid = elem.id
         if elemid not in ghdoc:
-            ghdoc.add(elemid)
+            ghdoc.add(elem)
             self.lru[ghkey] = ghdoc
 
     def flush(self):

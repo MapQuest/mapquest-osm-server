@@ -142,7 +142,7 @@ class OSMElement(dict):
             if k == C.ID:
                 assert self.id == str(d[k])
                 continue
-            if k == C.REFERENCES or k == C.NODES:
+            if k == C.REFERENCES:
                 v = set(d[k])
             else:
                 v = d[k]
@@ -193,9 +193,9 @@ class OSMGeoDoc(OSMElement):
     def build_response(self, element):
         raise TypeError, "GeoDocuments have no XML representation."
 
-    def get_node_ids(self):
-        "Return ids for the nodes associated with a way."
-        return [str(n) for n in self[C.NODES]]
+    def get_node_info(self):
+        "Return node ids and (lat, lon) coordinates in this document."
+        return self[C.NODES]
 
 class OSMNode(OSMElement):
 

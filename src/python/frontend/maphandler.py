@@ -32,12 +32,17 @@ from apiserver.osmelement import encode_coordinate, new_osm_response
 
 from util import filter_references, response_to_xml
 
-def _filter_in_bbox(bbox, nodelist):
+def _filter_in_bbox(bbox, geodocs):
     "Return the list of nodes that fall into the given bounding box."
     w,s,e,n = map(encode_coordinate, bbox)
 
-    return filter(lambda n: w <= n[C.LON] < e and s <= n[C.LAT] < n,
-                  nodelist)
+    nodeset = set()
+    for gd in geodocs:
+        for (nid, lat, lon) in gd.get_node_info():
+            if w <= lon < e and s <= lat < n:
+                nodeset.add(nid)
+    return nodeset
+
 
 class MapHandler(tornado.web.RequestHandler):
     "Handle requests for the /map API."
@@ -120,20 +125,13 @@ class MapHandler(tornado.web.RequestHandler):
 
         # Step 1: Get the list of nodes contained in the given
         #    bounding box.
-        nodeset = set()
-        for (st, gd) in geodocs:
-            if st:
-                nodeset.update(gd.get_node_ids())
-        if len(nodeset) > 0:
-            nodelist = _filter_in_bbox(
-                bbox, [z for (st, z) in self.datastore.fetch_keys(
-                        C.NODE, [n for n in nodeset]) if st])
-        if len(nodelist) == 0:
+        nodeset = _filter_in_bbox(bbox,
+                                  [gd for (st, gd) in geodocs if st])
+        if len(nodeset) == 0:
             return (nodelist, ways, relations)
 
-        # Build a fresh (possibly trimmed) nodeset.
-        nodeset = set([n.id for n in nodelist])
-
+        nodelist = [z for (st, z) in self.datastore.fetch_keys(
+                C.NODE, [n for n in nodeset]) if st]
 
         # Step 2: Retrieve all ways that reference at least one node
         #    in the given bounding box.
