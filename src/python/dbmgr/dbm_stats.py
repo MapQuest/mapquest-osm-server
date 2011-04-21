@@ -73,6 +73,7 @@ def init_statistics(config, options):
 
         _is_active = True
         _timer = threading.Timer(_timer_delay, _stats_timer)
+        _timer.daemon = True
         _timer.start()
 
 
