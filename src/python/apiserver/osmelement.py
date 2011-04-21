@@ -28,10 +28,11 @@ Exported functions:
     init_osm_factory -- initialize the factory.
 """
 
-import json
 import geohash
 import math
 import types
+
+import cjson
 
 from lxml import etree as ET
 
@@ -148,6 +149,15 @@ class OSMElement(dict):
                 v = d[k]
             setter(k, v)
 
+    def as_mapping(self):
+        "Translate to a Python mapping."
+        d = {}
+        for (k,v) in self.items():
+            if isinstance(v, set): # Convert sets to lists.
+                v = [r for r in v]
+            d[k] = v
+        return d
+                
     def build_response(self, element):
         "Return an XML representation of an element."
         raise TypeError, "Abstract method was invoked."
@@ -298,23 +308,13 @@ def new_osm_element(namespace, elemid):
 # JSON representation of an OSM element.
 #
 
-class OSMJsonEncoder(json.JSONEncoder):
-    def default(self, obj):
-        try:
-            iterable = iter(obj)
-        except TypeError:
-            pass
-        else:
-            return list(iterable)
-        return json.JSONEncoder.default(self, obj)
-
 def decode_json(jsonvalue):
     "Returns a Python object, given its JSON representation."
-    return json.loads(jsonvalue)
+    return cjson.decode(jsonvalue)
 
 def encode_json(obj):
     "Returns the JSON representation for a Python object."
-    return json.dumps(obj, cls=OSMJsonEncoder)
+    return cjson.encode(obj)
 
 #
 # Protobuf handling.

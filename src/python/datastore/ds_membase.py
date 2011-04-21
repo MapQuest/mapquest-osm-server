@@ -91,7 +91,7 @@ class DatastoreMembase(DatastoreBase):
 
         dskey = namespace[0].upper() + key
         db = self._get_connection()
-        db.set(dskey, self.encode(value))
+        db.set(dskey, self.encode(value.as_mapping()))
 
     def retrieve_slab(self, namespace, slabkey):
         """Return a slab of elements."""
@@ -129,7 +129,7 @@ class DatastoreMembase(DatastoreBase):
         for (st, e) in slabelems.items():
             if st:
                 # Todo ... INDIRECT elements.
-                slab.append((C.SLAB_INLINE, e))
+                slab.append((C.SLAB_INLINE, e.as_mapping()))
 
         rawbits = self.encode(slab)
         db = self._get_connection()
