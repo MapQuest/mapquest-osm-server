@@ -1,0 +1,128 @@
+SLABS						-*- mode: org; -*-
+
+* Motivation
+  OSM data has a large number of independently addressable elements
+  such as nodes, elements, ways and changesets.  Each element is named
+  using a decimal string.  There are today over a billion (10^9)
+  elements in the OSM database.
+
+  If directly expressed in key/value form, this means that the
+  datastore needs to be able to deal with about a billion keys.  OSM
+  key sizes are of the order of 10 bytes; OSM values are a few hundred
+  bytes on the average.
+
+  The Membase datastore keeps all its keys in RAM by design.  Membase
+  also has an overhead of 120 bytes per key.  Thus a straightforward
+  mapping of element IDs Membase's design leads to very large RAM
+  requirements.
+
+  Grouping multiple OSM elements into "slabs" is a work-around for
+  this issue.  Each "slab" is addressed using a Membase key.
+* Design
+** Basic Design
+   - Each element gets its own slab type (ways, nodes, changesets,
+     and relations).
+   - Elements are grouped into slabs.  Elements can be in the following
+     states in a slab:
+     1. Present in the datastore, and inline in the slab.  Used for
+        elements that are 'small' (for a configurable value of
+        'small').
+     2. Present in datastore, but not 'inline' in the slab.
+	These elements are "oversized" and are stored seperately.
+	They are retrieved using an independent fetch from the
+	datastore.
+     3. Not present in the datastore.  Such elements may be
+        `negatively cached', as an optimization.
+   - Each kind of slab has two configuration variables:
+     - The number of elements per slab (configuration variables:
+       {nodes|ways|relations}-per-slab).
+     - The max "inline" size of an element that resides in a slab.
+       (configuration variables: {nodes|ways|relations}-inline-size).
+** Size limits
+   - Membase has a max size of approximately 20MB for each value.
+     This sets the maximum size for the wire representation of each
+     slab.
+   - Membase keys are limited to 256 bytes.  This limit is not
+     expected to be a problem in the current design.
+** Dealing with too-large elements
+   If the total size for a slab is larger than some configurable
+   limit, elements larger than the configuration limit
+   (\*-inline-size) that are part of the slab can be made
+   'standalone'.
+** I/O operations
+   - I/O operations are done one slab at a time.  Batching of slab I/O
+     operations is not necessary since each slab would already be of a
+     substantial size.
+** Interaction with caching
+   - OSM elements are cached locally so as to improve request
+     handling latencies and to reduce the I/O transfer needs of
+     the system.
+   - The cache will hold all the elements for a given slab, or will
+     hold none of them.
+   - A cache element can be in one of the following states:
+     - 'present' => present in the cache
+     - 'not present' => not in the cache, but could be in the data
+       store.
+     - 'negatively cached' => definitely missing from the data store.
+   - Slabs are managed by a buffer with 'least recently used'
+     semantics.
+     - Whenever an element in the cache is accessed, the slab to which
+       the cache belongs is moved to the most-recently-used position
+       in the slab LRU.
+     - When the cache becomes 'full', the least recently used slab
+       is ejected from the cache, along with all its contents.
+*** Reads of cache elements
+    - A read miss causes the associated slab to be fetched and
+      inserted into the most-recently-used end of the slab LRU buffer.
+      All elements present in the slab will be inserted into the
+      cache.
+    - If I/O is in progress for the cache element/slab, then the
+      thread of control performing the read will wait.
+    - A read hit of a cache element causes its associated slab to move
+      to the most-recently-used end of the slab LRU buffer.
+*** Writes of cache elements
+    - A 'store' of a cache element will move its associated slab
+      descriptor to the most-recently-used end of the slab LRU buffer.
+    - If I/O is in progress for the slab associated with a cache
+      element, the thread of control performing the write will wait
+      for the I/O to complete.
+*** Reads of slabs
+    - The current implementation handles one read request for a slab
+      at a time.
+    - When the I/O completes, all the elements in the slab are added
+      to the cache.
+    - Elements that would fall into the slab but are not present are
+      marked as 'negatively cached'.
+    - When performing a read of a slab:
+      1. Atomically mark the slab as I/O-in-progress.  This causes
+         subsequent retrievals of cache elements in the slab to block.
+      2. Issue the read.
+      3. Vivify elements based on the slab's contents, converting from
+         the wire representation used (JSON/protobuf/whatever), and
+         insert them into the cache.
+      4. If some elements in the slab are not 'inline', issue reads
+         for these and vivify them.
+      5. Release the slab from the I/O-in-progress state, and insert
+         it into the most-recently-used end of the slab LRU buffer.
+*** Writes of slabs
+    - Slabs are scheduled to be written out in LRU order.
+    - All 'inline' elements in a slab will be written out together
+      (as part of the slab).
+    - 'Non inline' elements are written back at the same time, but as
+      individual objects.
+    - All elements in the slab are removed from the cache when the
+      slab is written to the data store.
+    - Slabs that are to be written out are marked as 'I/O in progress'
+      till the I/O completes.  This is to prevent another thread from
+      accessing an element/slab that is undergoing I/O.
+    - When performing a write of slab:
+      1. Atomically mark the slab as 'I/O in progress'.  This causes
+         subsequent retrievals of cache elements referenced by the
+         slab to block.
+      2. Collect all cache elements needed for creating the slab,
+	 and create the wire representation (JSON/protobuf/other) of
+	 the slab object.
+      3. Issue the write request.
+      4. When the write request completes, remove all the elements
+	 in the slab from the cache.
+      5. Finally, remove the slab from the slab LRU buffer.
