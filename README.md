@@ -18,11 +18,11 @@ The server only supports read queries on map data.
 
 ## Further Information
 
-Information on how to use this software package may be found on the
-project's [wiki][].
+Information on how to use this software package may be found in the
+project's [documentation][].
 
 <!-- References -->
 
  [membase]: http://www.membase.org/ "Membase"
  [osmapi]: http://wiki.openstreetmap.org/wiki/API_v0.6 "OSM v0.6 API"
- [wiki]: https://github.com/MapQuest/mapquest-osm-server/wiki
+ [documentation]: doc/Home.md
