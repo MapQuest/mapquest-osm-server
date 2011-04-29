@@ -1,12 +1,12 @@
 ## About
 
-This wiki page describes how to install and maintain an instance of
+This document describes how to install and maintain an instance of
 this server.
 
 ## Note
 
-Currently, the 'front-end server' and the 'ingestion tool' (the wiki
-page [Overview][] describes what these are) work "in-place" in the
+Currently, the 'front-end server' and the 'ingestion tool' (the
+document [Overview][] describes what these are) work "in-place" in the
 source tree.  An install-friendly package is yet to be created; see
 ticket [#5][issue5].
 
@@ -22,7 +22,8 @@ The server uses the following software packages:
 1. [Membase][], a scalable, distributed key/value store, used as the
    data store.
 1. [Python Geohash][pygeohash], a geohashing library.
-1. [Python Memcache][pymemcache], a [Memcache][] interface for [Python][], used to connect to the [Membase][] server, in compatibility mode.
+1. [Python Memcache][pymemcache], a [Memcache][] interface for [Python][],
+   used to connect to the [Membase][] server, in compatibility mode.
 1. [Py.Test][pytest], a test framework.
 
 ### Installation on Ubuntu 10.04 LTS

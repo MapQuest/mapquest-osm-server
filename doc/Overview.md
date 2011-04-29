@@ -1,6 +1,6 @@
 ## About
 
-This wiki page presents an overview of this map server.
+This document presents an overview of this map server.
 
 ## Goals
 
@@ -44,7 +44,8 @@ configuration file, see the file [osm-api-server.cfg][configsrc].
 
 ## See Also
 
-* [DesignMistakes][] -- Alternative designs that were tried, but which did not work out well.
+* [DesignMistakes][] -- Alternative designs that were tried, but
+  which did not work out well.
 * [Improvements][] -- (Near term) improvements to the design.
 
 <!-- References -->

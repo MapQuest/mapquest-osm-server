@@ -1,6 +1,6 @@
 ## About
 
-This wiki page contains information about the resource requirements
+This document contains information about the resource requirements
 needed for running an instance of this server.
 
 **Note**: A pending issue ([#13][issue13]) is currently preventing the load of a complete

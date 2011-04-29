@@ -6,7 +6,7 @@ This page lists the planned evolution of the server.
 
 * The code is functional, but need not be fast.
 * Modules have unit tests.
-* External documentation (i.e., on the [wiki][]) is upto-date.
+* External documentation is upto-date.
 * [Planet dumps][osmplanet] may be ingested and their data retrieved
   using the [API][osmapi].
 * Supported data store: [Membase][].
