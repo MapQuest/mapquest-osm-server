@@ -30,7 +30,8 @@ import threading
 import apiserver.const as C
 
 _timer_delay = 1         # Number of seconds between reports.
-_stats = {}              # Hash map tracking the collected statistics.
+_stats = {}              # Hash maps tracking the collected statistics.
+_prevstats = {}
 
 _timer = None                   # Timer object.
 _is_active = None               # Run state.
@@ -38,14 +39,46 @@ _lock = None
 
 def _display_stats():
     "Display statistics"
-    global _lock
+    global _lock, _prevstats
+
+    def _format(prefix, absval, incr):
+        """Helper function."""
+        s = ""
+        if absval:
+            s += ("%s: %%(_%sv)d" % (prefix.upper(), prefix))
+            if incr:
+                s += ("(+%%(_%s)d)" % prefix)
+            s += "  "
+        return s
+
+    # Retrieve the previous and current counts.
+    _c = _prevstats[C.CHANGESET]
+    _n = _prevstats[C.NODE]
+    _w = _prevstats[C.WAY]
+    _r = _prevstats[C.RELATION]
+
     _lock.acquire()
-    print "C: %d, N: %d, W: %d, R: %d" % (
-        _stats[C.CHANGESET],
-        _stats[C.NODE],
-        _stats[C.WAY],
-        _stats[C.RELATION])
+    _cv = _stats[C.CHANGESET]
+    _nv = _stats[C.NODE]
+    _wv = _stats[C.WAY]
+    _rv = _stats[C.RELATION]
+    _prevstats.update(_stats)
     _lock.release()
+
+    # Compute incremental changes.
+    _c = _cv - _c
+    _n = _nv - _n
+    _w = _wv - _w
+    _r = _rv - _r
+
+    # Compute the format string.
+    s = _format('c', _cv, _c)
+    s += _format('n', _nv, _n)
+    s += _format('w', _wv, _w)
+    s += _format('r', _rv, _r)
+
+    print s % locals()
+
 
 def _stats_timer():
     "Invoke the actual display helper and re-arm the timer."
@@ -60,10 +93,10 @@ def _stats_timer():
 
 def init_statistics(config, options):
     "Initialize the module."
-    global _stats
+    global _stats, _prevstats
 
     for n in [C.CHANGESET, C.NODE, C.WAY, C.RELATION]:
-        _stats[n] = 0
+        _stats[n] = _prevstats[n] = 0
 
     global _lock
     _lock = threading.Lock()
