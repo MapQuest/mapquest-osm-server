@@ -91,12 +91,6 @@ def main():
 
     options, args = parser.parse_args()
 
-    # Check invocation syntax.
-    if options.doinit:
-        if len(args):
-            parser.error("both option -I/--init and [files] were specified "
-                         "together.")
-
     # Read configuration information.
     configfiles = [options.config, os.path.join(sys.path[0], devconfigdir,
                                          devconfigfilename)]
@@ -131,7 +125,6 @@ def main():
 
     if options.doinit:
         db.initialize()
-        return
 
     ops = DBOps(cfg, options, db)
 
