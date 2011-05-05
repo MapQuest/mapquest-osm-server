@@ -64,10 +64,10 @@ class RootHandler(tornado.web.RequestHandler):
    <h2>More Information</h2>
    <p>This server is being developed as an open-source project.</p>
    <ul>
-     <li><p>Source code may be found at:
+     <li><p>Source code for the project is available at:
        <a href="%(sourcerepository)s">%(sourcerepository)s</a>.</p></li>
-     <li><p>The project wiki may be found at:
-       <a href="%(projectwiki)s">%(projectwiki)s</a>.</p></li>
+     <li><p>Documentation for project is available at:
+       <a href="%(projectdoc)s">%(projectdoc)s</a>.</p></li>
    </ul>
   </body>
 </html>"""
@@ -75,7 +75,7 @@ class RootHandler(tornado.web.RequestHandler):
     def initialize(self, cfg):
         self.usagemessage = RootHandler.default_message % dict(
             apiversion=cfg.get(C.FRONT_END, C.API_VERSION),
-            projectwiki=cfg.get(C.DEFAULT, C.PROJECT_WIKI),
+            projectdoc=cfg.get(C.DEFAULT, C.PROJECT_DOC),
             sourcerepository=cfg.get(C.DEFAULT, C.SOURCE_REPOSITORY))
 
     def get(self):
