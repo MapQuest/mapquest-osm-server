@@ -26,7 +26,7 @@ import collections
 
 import apiserver.const as C
 
-__all__ = [ 'slabutil_get_config', 'slabutil_group_keys', 'slabutil_init',
+__all__ = [ 'init_slabutil', 'slabutil_get_config', 'slabutil_group_keys',
             'slabutil_key_to_start_index', 'slabutil_make_slabkey',
             'slabutil_make_slab', 'slabutil_use_slab' ]
 
@@ -129,7 +129,7 @@ class _NumericKeySlab(_Slab):
         index = int(key) % self._nperslab
         self._contents[index] = value
 
-def slabutil_init(config):
+def init_slabutil(config):
     "Initialize the module."
     _slab_config[C.CHANGESET] = (
         config.getint(C.DATASTORE, C.CHANGESETS_INLINE_SIZE),

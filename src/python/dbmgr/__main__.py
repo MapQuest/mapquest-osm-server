@@ -35,6 +35,7 @@ toolversion = '0.1'
 toolconfig = '/etc/openstreetmap/osm-api-server.cfg'
 
 from datastore.ds_geohash import init_geohash
+from datastore.slabutil import init_slabutil
 from dbmgr.dbm_input import makesource
 from dbmgr.dbm_ops import DBOps
 from dbmgr.dbm_stats import fini_statistics, init_statistics
@@ -132,7 +133,8 @@ def main():
     init_geohash(cfg.getint(C.DATASTORE, C.GEOHASH_LENGTH),
                  cfg.getint(C.DATASTORE, C.SCALE_FACTOR))
 
-    # Initialize the OSM element factory.
+    # Initialize the OSM element factory and related modules.
+    init_slabutil(cfg)
     init_osm_factory(cfg)
 
     # Turn file names into iterators that deliver an element at a time.

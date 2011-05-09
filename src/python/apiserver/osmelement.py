@@ -37,7 +37,7 @@ import cjson
 from lxml import etree as ET
 
 import apiserver.const as C
-from datastore.slabutil import slabutil_init, slabutil_make_slabkey
+from datastore.slabutil import slabutil_make_slabkey
 
 _server_version = None
 _server_name = None
@@ -57,8 +57,6 @@ def init_osm_factory(config):
 
     _server_version = config.get(C.FRONT_END, C.SERVER_VERSION)
     _server_name = config.get(C.FRONT_END, C.SERVER_NAME)
-
-    slabutil_init(config)
 
 def encode_coordinate(coordinate):
     """Encode a latitude or longitude as an integral value.

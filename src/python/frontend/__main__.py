@@ -29,6 +29,7 @@ import tornado.options
 import apiserver.const as C
 from fe import OSMFrontEndServer
 from apiserver.osmelement import init_osm_factory
+from datastore.slabutil import init_slabutil
 
 # Where to find configuration information.
 default_config_directory	= "config"
@@ -94,7 +95,8 @@ def main():
         error("Could not initialize datastore of type \"%s\": %s" %
               (backend, str(x)))
 
-    # Initialize the OSM element factory.
+    # Initialize the OSM element factory and other modules.
+    init_slabutil(cfg)
     init_osm_factory(cfg)
 
     # Create an instance of the front-end server.
