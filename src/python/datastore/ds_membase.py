@@ -37,6 +37,9 @@ from datastore.slabutil import *
 class DatastoreMembase(DatastoreBase):
     "An interface to a Membase (www.membase.org) datastore."
 
+    SLAB_CONFIGURATION_KEYS =  [C.CHANGESETS_PER_SLAB, C.NODES_PER_SLAB,
+                                C.RELATIONS_PER_SLAB, C.WAYS_PER_SLAB]
+
     def __init__(self, config, usethreads=False, writeback=False):
         "Initialize the datastore."
 
@@ -54,6 +57,32 @@ class DatastoreMembase(DatastoreBase):
             threads.extend(self.threads)
 
         self.register_threads(threads)
+
+        if writeback:
+            # Store slab configuration information for subsequent
+            # retrieval by the front end.
+            slabconfig = new_osm_element(C.DATASTORE_CONFIG, C.CFGSLAB)
+            for k in DatastoreMembase.SLAB_CONFIGURATION_KEYS:
+                slabconfig[k] = config.get(C.DATASTORE, k)
+            slabconfig[C.CONFIGURATION_SCHEMA_VERSION] = C.CFGVERSION
+            self.store_element(C.DATASTORE_CONFIG, C.CFGSLAB, slabconfig)
+        else:
+            # Read slab configuration information from the data store.
+            slabconfig = self.retrieve_element(C.DATASTORE_CONFIG, C.CFGSLAB)
+            if slabconfig is not None:
+                schema_version = slabconfig.get(C.CONFIGURATION_SCHEMA_VERSION)
+                if schema_version != C.CFGVERSION:
+                    raise ValueError, \
+                        "Datastore schema version mismatch: expected %s, " \
+                        "actual %s." % \
+                        (str(C.CFGVERSION), str(schema_version))
+                for (k,v) in slabconfig.items():
+                    if k in DatastoreMembase.SLAB_CONFIGURATION_KEYS:
+                        config.set(C.DATASTORE, k, v)
+            else:
+                raise ValueError, \
+                    "Datastore is missing configuration information."
+
 
     def _get_connection(self):
         return self.conndb[threading.currentThread().name]

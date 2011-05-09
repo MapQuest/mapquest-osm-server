@@ -189,6 +189,9 @@ class OSMChangeSet(OSMElement):
 
         return osm
 
+class OSMDatastoreConfig(OSMElement):
+    def __init__(self, elemid):
+        OSMElement.__init__(self, C.DATASTORE_CONFIG, elemid)
 
 class OSMGeoDoc(OSMElement):
     """A geodoc references nodes which fall into a given geographic area."""
@@ -285,6 +288,7 @@ class OSMRelation(OSMElement):
 
 _namespace_to_factory = {
     C.CHANGESET:	OSMChangeSet,
+    C.DATASTORE_CONFIG: OSMDatastoreConfig,
     C.GEODOC:		OSMGeoDoc,
     C.NODE:		OSMNode,
     C.WAY:		OSMWay,
