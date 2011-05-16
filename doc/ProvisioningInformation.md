@@ -21,21 +21,20 @@ needed for running an instance of this server.
   * 245137 unique keys in the data store (using the default slab settings).
 * Representative timings using the default configuration, with both Membase and front-end running on `localhost`:
   * First fetch of a node (i.e., with a 'cold' element cache):
-```shell
-[I 110413 21:53:53 web:849] 200 GET /api/0.6/node/15382163 (127.0.0.1) 15.50ms
-```
+
+      `[I 110413 21:53:53 web:849] 200 GET /api/0.6/node/15382163 (127.0.0.1) 15.50ms`
+
   * First fetch of the ways for a node:
-```shell
-[I 110413 21:53:57 web:849] 200 GET /api/0.6/node/15382163/ways (127.0.0.1) 5.40ms
-```
+
+      `[I 110413 21:53:57 web:849] 200 GET /api/0.6/node/15382163/ways (127.0.0.1) 5.40ms`
+
   * Subsequent re-fetch of the ways for the same node:
-```shell
-[I 110413 21:54:00 web:849] 200 GET /api/0.6/node/15382163/ways (127.0.0.1) 0.99ms
-```
+
+      `[I 110413 21:54:00 web:849] 200 GET /api/0.6/node/15382163/ways (127.0.0.1) 0.99ms`
+
   * A re-fetch of the same node:
-```shell
-[I 110413 21:54:10 web:849] 200 GET /api/0.6/node/15382163 (127.0.0.1) 0.68ms
-```
+
+      `[I 110413 21:54:10 web:849] 200 GET /api/0.6/node/15382163 (127.0.0.1) 0.68ms`
 
 I do not have scaling numbers under load (yet).
 
