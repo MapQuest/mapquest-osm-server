@@ -25,4 +25,4 @@ project's [documentation][].
 
  [membase]: http://www.membase.org/ "Membase"
  [osmapi]: http://wiki.openstreetmap.org/wiki/API_v0.6 "OSM v0.6 API"
- [documentation]: doc/Home.md
+ [documentation]: https://github.com/MapQuest/mapquest-osm-server/blob/master/doc/Home.md
