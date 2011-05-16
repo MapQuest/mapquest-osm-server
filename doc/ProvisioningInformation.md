@@ -20,21 +20,14 @@ needed for running an instance of this server.
   * Reported RAM usage: 882MB (seems high?).
   * 245137 unique keys in the data store (using the default slab settings).
 * Representative timings using the default configuration, with both Membase and front-end running on `localhost`:
-  * First fetch of a node (i.e., with a 'cold' element cache):
-
-      `[I 110413 21:53:53 web:849] 200 GET /api/0.6/node/15382163 (127.0.0.1) 15.50ms`
-
-  * First fetch of the ways for a node:
-
-      `[I 110413 21:53:57 web:849] 200 GET /api/0.6/node/15382163/ways (127.0.0.1) 5.40ms`
-
-  * Subsequent re-fetch of the ways for the same node:
-
-      `[I 110413 21:54:00 web:849] 200 GET /api/0.6/node/15382163/ways (127.0.0.1) 0.99ms`
-
-  * A re-fetch of the same node:
-
-      `[I 110413 21:54:10 web:849] 200 GET /api/0.6/node/15382163 (127.0.0.1) 0.68ms`
+  * First fetch of a node (i.e., with a 'cold' element cache): <br />
+    `[I 110413 21:53:53 web:849] 200 GET /api/0.6/node/15382163 (127.0.0.1) 15.50ms`
+  * First fetch of the ways for a node: <br />
+    `[I 110413 21:53:57 web:849] 200 GET /api/0.6/node/15382163/ways (127.0.0.1) 5.40ms`
+  * Subsequent re-fetch of the ways for the same node: <br />
+    `[I 110413 21:54:00 web:849] 200 GET /api/0.6/node/15382163/ways (127.0.0.1) 0.99ms`
+  * A re-fetch of the same node: <br />
+    `[I 110413 21:54:10 web:849] 200 GET /api/0.6/node/15382163 (127.0.0.1) 0.68ms`
 
 I do not have scaling numbers under load (yet).
 
