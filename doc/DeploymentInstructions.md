@@ -18,7 +18,7 @@ The server uses the following software packages:
 1. [Tornado][], a [Python][] web server framework, for the front-end.
 1. [lxml][], a [Python][] XML parsing library, used by both the
    front-end and the ingestion tool.
-1. The [cjson][] JSON (en|de)coder module 
+1. The [cjson][] JSON (en|de)coder module.
 1. [Membase][], a scalable, distributed key/value store, used as the
    data store.
 1. [Python Geohash][pygeohash], a geohashing library.
@@ -34,14 +34,12 @@ To install these dependencies on an Ubuntu GNU/Linux v10.04 LTS system, do:
     1.  Download the `.deb` file appropriate for your computer architecture
 	from the project's [download page][membasedownload].
     1.  Install the download `.deb` package using the **dpkg** utility.
-    	For example:
-```shell
-% sudo dpkg -i membase-server-community_x86_1.6.5.3.deb
-```
+	For example: <br />
+	`% sudo dpkg -i membase-server-community_x86_1.6.5.3.deb` <br />
 	Repeat this on all the machines that you wish to run your
 	[Membase][] cluster on.
     1.  Using your browser, login to the membase console at
-    	http://*hostname*:8091, and create a default bucket of type
+	http://*hostname*:8091, and create a default bucket of type
 	'membase' listening on port 11211. If you have multiple machines
 	in your [Membase][] cluster, you would need to login and setup
 	each of these.
@@ -50,71 +48,58 @@ To install these dependencies on an Ubuntu GNU/Linux v10.04 LTS system, do:
     on *all* network interfaces.  On an internet-facing server, you would
     need to adjust your firewall rules to prevent the world+dog from accessing
     your membase instance.
-2.  Install pre-packaged binaries:
-```shell
-% sudo apt-get install git-core gcc g++
-% sudo apt-get install python2.6 python2.6-dev python-lxml python-setuptools python-memcache python-cjson
-```
+2.  Install pre-packaged binaries: <br />
+    `% sudo apt-get install git-core gcc g++` <br />
+    `% sudo apt-get install python2.6 python2.6-dev python-lxml python-setuptools python-memcache python-cjson`
 3.  Install additional Python libraries and tools
-    1.  Install [Python geohash][pygeohash] using `easy_install`:
-```shell
-% sudo easy_install python-geohash
-```
-    1. Install [Tornado][]:
-```shell
-% git clone https://github.com/facebook/tornado.git
-% cd tornado
-% sudo python setup.py install
-```
+    1.  Install [Python geohash][pygeohash] using `easy_install`: <br />
+    `% sudo easy_install python-geohash`
+    1. Install [Tornado][]: <br />
+    `% git clone https://github.com/facebook/tornado.git` <br />
+    `% cd tornado` <br />
+    `% sudo python setup.py install`
 4.  Optional stuff:
-    1.  Install `py.test`, if you wish to run the tests:
-```shell
-% sudo easy_install pytest
-```
+    1.  Install `py.test`, if you wish to run the tests: <br />
+    `% sudo easy_install pytest`
 
 ## Setup
 
 The procedure to bring up the server is as follows.
 
 1. Install the dependencies listed above.
-1. Checkout the server source from [GitHub][].
-```shell    
-% git clone git://github.com/MapQuest/mapquest-osm-server.git
-```
+1. Checkout the server source from [GitHub][]. <br />
+   `% git clone git://github.com/MapQuest/mapquest-osm-server.git`
 1. Edit the file `src/python/config/osm-api-server.cfg`, and change
    the `dbhost` configuration item in section `membase` to point to
    where your [Membase][] instance lives.  The default configuration
    assumes that your membase server is running on localhost.
 1. Download a [planet.osm][osmplanet] dump or subset thereof, for
    example, from <http://geofabrik.de/>.
-1. Load in the downloaded planet file using the `db-mgr` tool:
-```shell    
-% cd src/python
-% ./db-mgr PATH-TO-THE-DOWNLOADED-PLANET
-```
-1.  Run the front-end of the server:
-```shell
-% sudo ./front-end
-```
+1. Load in the downloaded planet file using the `db-mgr` tool: <br />
+   `% cd src/python` <br />
+   `% ./db-mgr PATH-TO-THE-DOWNLOADED-PLANET`
+1.  Run the front-end of the server: <br />
+    `% sudo ./front-end` <br />
     The server listens for API requests on port 80 by default.  The
     configuration item `port` in the configuration section `front-end`
     can be used to change this.
 1.  Check operation of the server.  Assuming that the default
-    configuration, you could try:
-```shell
-% curl http://localhost/api/capabilities
-<?xml version='1.0' encoding='utf-8'?>
-<osm version="0.6" generator="OSM API Server Prototype 0.6">
- <api>
-   <version minimum="0.6" maximum="0.6"/>
-    <area maximum="180.0"/>
-    <tracepoints per_page="5000"/>
-    <waynodes maximum="2000"/>
-    <changesets maximum_elements="50000"/>
-    <timeout seconds="300"/>
- </api>
-</osm>
-```
+    configuration, you could try the `api/capabilities` URL as
+    below:<br />
+    <pre>
+    % curl http://localhost/api/capabilities
+    &lt;?xml version='1.0' encoding='utf-8'?>
+    &lt;osm version="0.6" generator="OSM API Server Prototype 0.6">
+     &lt;api>
+       &lt;version minimum="0.6" maximum="0.6"/>
+        &lt;area maximum="180.0"/>
+        &lt;tracepoints per_page="5000"/>
+        &lt;waynodes maximum="2000"/>
+        &lt;changesets maximum_elements="50000"/>
+        &lt;timeout seconds="300"/>
+     &lt;/api>
+    &lt;/osm>
+    </pre>
     The document [SupportedRequests][] lists the current set of APIs supported.
 
 <!-- References -->
