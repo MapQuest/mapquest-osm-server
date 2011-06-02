@@ -65,10 +65,11 @@ class DatastoreMembase(DatastoreBase):
             for k in DatastoreMembase.SLAB_CONFIGURATION_KEYS:
                 slabconfig[k] = config.get(C.DATASTORE, k)
             slabconfig[C.CONFIGURATION_SCHEMA_VERSION] = C.CFGVERSION
-            self.store_element(C.DATASTORE_CONFIG, C.CFGSLAB, slabconfig)
+            self.slabconfig = slabconfig
         else:
             # Read slab configuration information from the data store.
-            slabconfig = self.retrieve_element(C.DATASTORE_CONFIG, C.CFGSLAB)
+            self.slabconfig = slabconfig = \
+                self.retrieve_element(C.DATASTORE_CONFIG, C.CFGSLAB)
             if slabconfig is not None:
                 schema_version = slabconfig.get(C.CONFIGURATION_SCHEMA_VERSION)
                 if schema_version != C.CFGVERSION:
@@ -166,7 +167,11 @@ class DatastoreMembase(DatastoreBase):
 
     def initialize(self):
         "Initialize the database."
+        # Flush all existing elements.
         self.conndb[threading.currentThread().name].flush_all()
+
+        # Save the current slab configuration.
+        self.store_element(C.DATASTORE_CONFIG, C.CFGSLAB, self.slabconfig)
 
 
 Datastore = DatastoreMembase
