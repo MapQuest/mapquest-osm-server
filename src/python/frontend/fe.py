@@ -24,6 +24,7 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 
+import platform
 import sys
 
 #
@@ -61,6 +62,19 @@ class RootHandler(tornado.web.RequestHandler):
      OSM API.</p>
    <p>OSM API calls that change map data are not supported.</p>
 
+   <h2>Examples of API use</h2>
+   <ul>
+    <li>To retrieve the capabilities of this server, use:
+     <pre><code>%% curl http://%(hostname)s/api/capabilities</code></pre>
+    </li>
+    <li>To retrieve the contents of node <code>15382126</code> from the command-line, use:
+     <pre><code>%% curl http://%(hostname)s/api/%(apiversion)s/node/15382126</code></pre>
+    </li>
+    <li>To retrieve the ways for node <code>15382126</code>, use:
+     <pre><code>%% curl http://%(hostname)s/api/%(apiversion)s/node/15382126/ways</code></pre>
+    </li>
+   </ul>
+
    <h2>More Information</h2>
    <p>This server is being developed as an open-source project.</p>
    <ul>
@@ -75,6 +89,7 @@ class RootHandler(tornado.web.RequestHandler):
     def initialize(self, cfg):
         self.usagemessage = RootHandler.default_message % dict(
             apiversion=cfg.get(C.FRONT_END, C.API_VERSION),
+            hostname=platform.node(),
             projectdoc=cfg.get(C.DEFAULT, C.PROJECT_DOC),
             sourcerepository=cfg.get(C.DEFAULT, C.SOURCE_REPOSITORY))
 
